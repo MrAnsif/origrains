@@ -16,11 +16,34 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React, { useEffect, useMemo, useState } from 'react'
 
+import { Button } from '@/components/ui/button'
+import { Product, Variant, VariantOption } from '@/payload-types'
 import { DeleteItemButton } from './DeleteItemButton'
 import { EditItemQuantityButton } from './EditItemQuantityButton'
 import { OpenCartButton } from './OpenCart'
-import { Button } from '@/components/ui/button'
-import { Product } from '@/payload-types'
+
+type GalleryEntry = NonNullable<Product['gallery']>[number]
+
+const getVariantImage = (
+  gallery: NonNullable<Product['gallery']>,
+  variant: Variant,
+): GalleryEntry['image'] | undefined => {
+  const imageVariant = gallery.find((galleryEntry: GalleryEntry) => {
+    if (!galleryEntry.variantOption) return false
+
+    const variantOptionID =
+      typeof galleryEntry.variantOption === 'object'
+        ? galleryEntry.variantOption.id
+        : galleryEntry.variantOption
+
+    return variant.options.some((option) => {
+      if (typeof option === 'object') return option.id === variantOptionID
+      return option === variantOptionID
+    })
+  })
+
+  return typeof imageVariant?.image === 'object' ? imageVariant.image : undefined
+}
 
 export function CartModal() {
   const { cart } = useCart()
@@ -82,26 +105,13 @@ export function CartModal() {
 
                   const isVariant = Boolean(variant) && typeof variant === 'object'
 
-                  if (isVariant) {
-                    price = variant?.priceInUSD
-
-                    const imageVariant = product.gallery?.find((item) => {
-                      if (!item.variantOption) return false
-                      const variantOptionID =
-                        typeof item.variantOption === 'object'
-                          ? item.variantOption.id
-                          : item.variantOption
-
-                      const hasMatch = variant?.options?.some((option) => {
-                        if (typeof option === 'object') return option.id === variantOptionID
-                        else return option === variantOptionID
-                      })
-
-                      return hasMatch
-                    })
-
-                    if (imageVariant && typeof imageVariant.image === 'object') {
-                      image = imageVariant.image
+                  if (isVariant && typeof variant === 'object') {
+                    price = variant.priceInUSD
+                    if (product.gallery) {
+                      const variantImage = getVariantImage(product.gallery, variant)
+                      if (variantImage) {
+                        image = variantImage
+                      }
                     }
                   }
 
@@ -129,10 +139,10 @@ export function CartModal() {
 
                           <div className="flex flex-1 flex-col text-base">
                             <span className="leading-tight">{product?.title}</span>
-                            {isVariant && variant ? (
+                            {isVariant && typeof variant === 'object' ? (
                               <p className="text-sm text-neutral-500 dark:text-neutral-400 capitalize">
                                 {variant.options
-                                  ?.map((option) => {
+                                  ?.map((option: number | VariantOption) => {
                                     if (typeof option === 'object') return option.label
                                     return null
                                   })

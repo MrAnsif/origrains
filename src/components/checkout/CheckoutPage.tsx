@@ -19,7 +19,7 @@ import { CheckoutForm } from '@/components/forms/CheckoutForm'
 import { useAddresses, useCart, usePayments } from '@payloadcms/plugin-ecommerce/client/react'
 import { CheckoutAddresses } from '@/components/checkout/CheckoutAddresses'
 import { CreateAddressModal } from '@/components/addresses/CreateAddressModal'
-import { Address } from '@/payload-types'
+import { Address, Product, Variant, VariantOption } from '@/payload-types'
 import { Checkbox } from '@/components/ui/checkbox'
 import { AddressItem } from '@/components/addresses/AddressItem'
 import { FormItem } from '@/components/forms/FormItem'
@@ -28,6 +28,29 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 const apiKey = `${process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}`
 const stripe = loadStripe(apiKey)
+
+type GalleryEntry = NonNullable<Product['gallery']>[number]
+
+function getVariantImage(
+  gallery: NonNullable<Product['gallery']>,
+  variant: Variant,
+): GalleryEntry['image'] | undefined {
+  const imageVariant = gallery.find((galleryEntry: GalleryEntry) => {
+    if (!galleryEntry.variantOption) return false
+
+    const variantOptionID =
+      typeof galleryEntry.variantOption === 'object'
+        ? galleryEntry.variantOption.id
+        : galleryEntry.variantOption
+
+    return variant.options.some((option: number | VariantOption) => {
+      if (typeof option === 'object') return option.id === variantOptionID
+      return option === variantOptionID
+    })
+  })
+
+  return typeof imageVariant?.image === 'object' ? imageVariant.image : undefined
+}
 
 export const CheckoutPage: React.FC = () => {
   const { user } = useAuth()
@@ -370,26 +393,14 @@ export const CheckoutPage: React.FC = () => {
 
               const isVariant = Boolean(variant) && typeof variant === 'object'
 
-              if (isVariant) {
-                price = variant?.priceInUSD
+              if (isVariant && typeof variant === 'object') {
+                price = variant.priceInUSD
 
-                const imageVariant = product.gallery?.find((item) => {
-                  if (!item.variantOption) return false
-                  const variantOptionID =
-                    typeof item.variantOption === 'object'
-                      ? item.variantOption.id
-                      : item.variantOption
-
-                  const hasMatch = variant?.options?.some((option) => {
-                    if (typeof option === 'object') return option.id === variantOptionID
-                    else return option === variantOptionID
-                  })
-
-                  return hasMatch
-                })
-
-                if (imageVariant && typeof imageVariant.image !== 'string') {
-                  image = imageVariant.image
+                if (gallery) {
+                  const variantImage = getVariantImage(gallery, variant)
+                  if (variantImage) {
+                    image = variantImage
+                  }
                 }
               }
 
@@ -408,7 +419,7 @@ export const CheckoutPage: React.FC = () => {
                       {variant && typeof variant === 'object' && (
                         <p className="text-sm font-mono text-primary/50 tracking-widest">
                           {variant.options
-                            ?.map((option) => {
+                            ?.map((option: number | VariantOption) => {
                               if (typeof option === 'object') return option.label
                               return null
                             })
