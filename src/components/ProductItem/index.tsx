@@ -2,9 +2,32 @@ import { Media } from '@/components/Media'
 import { OrderStatus } from '@/components/OrderStatus'
 import { Price } from '@/components/Price'
 import { Button } from '@/components/ui/button'
-import { Media as MediaType, Order, Product, Variant } from '@/payload-types'
+import { Media as MediaType, Order, Product, Variant, VariantOption } from '@/payload-types'
 import { formatDateTime } from '@/utilities/formatDateTime'
 import Link from 'next/link'
+
+type GalleryEntry = NonNullable<Product['gallery']>[number]
+
+function getVariantImage(
+  gallery: NonNullable<Product['gallery']>,
+  variant: Variant,
+): GalleryEntry['image'] | undefined {
+  const imageVariant = gallery.find((galleryEntry: GalleryEntry) => {
+    if (!galleryEntry.variantOption) return false
+
+    const variantOptionID =
+      typeof galleryEntry.variantOption === 'object'
+        ? galleryEntry.variantOption.id
+        : galleryEntry.variantOption
+
+    return variant.options.some((option: number | VariantOption) => {
+      if (typeof option === 'object') return option.id === variantOptionID
+      return option === variantOptionID
+    })
+  })
+
+  return typeof imageVariant?.image === 'object' ? imageVariant.image : undefined
+}
 
 type Props = {
   product: Product
@@ -36,22 +59,10 @@ export const ProductItem: React.FC<Props> = ({
 
   const isVariant = Boolean(variant) && typeof variant === 'object'
 
-  if (isVariant) {
-    const imageVariant = product.gallery?.find((item) => {
-      if (!item.variantOption) return false
-      const variantOptionID =
-        typeof item.variantOption === 'object' ? item.variantOption.id : item.variantOption
-
-      const hasMatch = variant?.options?.some((option) => {
-        if (typeof option === 'object') return option.id === variantOptionID
-        else return option === variantOptionID
-      })
-
-      return hasMatch
-    })
-
-    if (imageVariant && typeof imageVariant.image !== 'string') {
-      image = imageVariant.image
+  if (isVariant && variant && product.gallery) {
+    const variantImage = getVariantImage(product.gallery, variant)
+    if (variantImage) {
+      image = variantImage
     }
   }
 
@@ -75,7 +86,7 @@ export const ProductItem: React.FC<Props> = ({
           {variant && (
             <p className="text-sm font-mono text-primary/50 tracking-widest">
               {variant.options
-                ?.map((option) => {
+                ?.map((option: number | VariantOption) => {
                   if (typeof option === 'object') return option.label
                   return null
                 })
