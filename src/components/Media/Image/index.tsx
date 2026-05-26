@@ -37,7 +37,6 @@ export const Image: React.FC<MediaProps> = (props) => {
   if (!src && resource && typeof resource === 'object') {
     const {
       alt: altFromResource,
-      filename: fullFilename,
       height: fullHeight,
       url,
       width: fullWidth,
@@ -47,9 +46,11 @@ export const Image: React.FC<MediaProps> = (props) => {
     height = heightFromProps ?? fullHeight
     alt = altFromResource
 
-    const filename = fullFilename
-
-    src = `${process.env.NEXT_PUBLIC_SERVER_URL}${url}`
+    // If url is already absolute (CDN), use it directly.
+    // If it's a relative path (e.g. /api/media/file/...), use it as-is —
+    // prepending the server URL would make it an absolute localhost URL which
+    // next/image blocks when fetching from a private IP.
+    src = url?.startsWith('http') ? url : (url ?? '')
   }
 
   // NOTE: this is used by the browser to determine which image to download at different screen sizes
