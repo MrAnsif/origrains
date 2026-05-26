@@ -31,10 +31,10 @@ const nextConfig: NextConfig = {
           protocol: url.protocol.replace(':', '') as 'http' | 'https',
         }
       }),
-      ...(process.env.NEXT_PUBLIC_R2_CDN_DOMAIN
+      ...(process.env.NEXT_PUBLIC_MEDIA_CDN_DOMAIN
         ? [
             {
-              hostname: process.env.NEXT_PUBLIC_R2_CDN_DOMAIN,
+              hostname: process.env.NEXT_PUBLIC_MEDIA_CDN_DOMAIN,
               protocol: 'https' as const,
             },
           ]
