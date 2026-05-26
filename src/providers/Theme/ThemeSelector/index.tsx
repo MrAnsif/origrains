@@ -35,13 +35,13 @@ export const ThemeSelector: React.FC = () => {
 
   return (
     <Select onValueChange={onThemeChange} value={value}>
-      <SelectTrigger className="w-auto bg-transparent gap-2 md:pl-3 border-none">
+      <SelectTrigger className="w-auto bg-transparent gap-2 md:pl-3 uppercase font-mono text-xs tracking-widest border-none ">
         <SelectValue placeholder="Theme" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="auto">Auto</SelectItem>
-        <SelectItem value="light">Light</SelectItem>
-        <SelectItem value="dark">Dark</SelectItem>
+        <SelectItem value="auto">AUTO</SelectItem>
+        <SelectItem value="light">LIGHT</SelectItem>
+        <SelectItem value="dark">DARK</SelectItem>
       </SelectContent>
     </Select>
   )

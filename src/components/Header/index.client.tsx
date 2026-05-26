@@ -11,6 +11,7 @@ import type { Header } from 'src/payload-types'
 import { LogoIcon } from '@/components/icons/logo'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/utilities/cn'
+import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 
 type Props = {
   header: Header
@@ -58,6 +59,9 @@ export function HeaderClient({ header }: Props) {
             <Suspense fallback={<OpenCartButton />}>
               <Cart />
             </Suspense>
+            <div className='navLink relative text-primary/50 hover:text-primary'>
+            <ThemeSelector />
+            </div>
           </div>
         </div>
       </nav>
