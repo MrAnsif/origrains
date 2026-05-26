@@ -20,6 +20,15 @@ type Args = {
   }>
 }
 
+/** Resolve a Payload media URL to an absolute URL for use in metadata / structured data.
+ * - CDN urls already start with http → returned as-is
+ * - Relative paths (e.g. /api/media/file/...) → prepend the server URL
+ */
+function toAbsoluteUrl(url: string | null | undefined): string | undefined {
+  if (!url) return undefined
+  return url.startsWith('http') ? url : `${process.env.NEXT_PUBLIC_SERVER_URL}${url}`
+}
+
 export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const { slug } = await params
   const product = await queryProductBySlug({ slug })
@@ -32,17 +41,18 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const canIndex = product._status === 'published'
 
   const seoImage = metaImage || (gallery.length ? (gallery[0]?.image as Media) : undefined)
+  const seoImageUrl = toAbsoluteUrl(seoImage?.url)
 
   return {
     description: product.meta?.description || '',
-    openGraph: seoImage?.url
+    openGraph: seoImageUrl
       ? {
           images: [
             {
               alt: seoImage?.alt,
-              height: seoImage.height!,
-              url: seoImage?.url,
-              width: seoImage.width!,
+              height: seoImage!.height!,
+              url: seoImageUrl,
+              width: seoImage!.width!,
             },
           ],
         }
@@ -97,7 +107,7 @@ export default async function ProductPage({ params }: Args) {
     '@context': 'https://schema.org',
     '@type': 'Product',
     description: product.description,
-    image: metaImage?.url,
+    image: toAbsoluteUrl(metaImage?.url),
     offers: {
       '@type': 'AggregateOffer',
       availability: hasStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
