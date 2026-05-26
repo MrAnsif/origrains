@@ -23,22 +23,23 @@ const nextConfig: NextConfig = {
     ],
     qualities: [90, 100],
     remotePatterns: [
-      ...[NEXT_PUBLIC_SERVER_URL /* 'https://example.com' */].map((item) => {
-        const url = new URL(item)
-
-        return {
-          hostname: url.hostname,
-          protocol: url.protocol.replace(':', '') as 'http' | 'https',
+      ...[
+        NEXT_PUBLIC_SERVER_URL,
+        ...(process.env.NEXT_PUBLIC_MEDIA_CDN_DOMAIN ? [process.env.NEXT_PUBLIC_MEDIA_CDN_DOMAIN] : []),
+      ].map((item) => {
+        try {
+          const url = new URL(item)
+          return {
+            hostname: url.hostname,
+            protocol: url.protocol.replace(':', '') as 'http' | 'https',
+          }
+        } catch {
+          return {
+            hostname: item,
+            protocol: 'https' as const,
+          }
         }
       }),
-      ...(process.env.NEXT_PUBLIC_MEDIA_CDN_DOMAIN
-        ? [
-            {
-              hostname: process.env.NEXT_PUBLIC_MEDIA_CDN_DOMAIN,
-              protocol: 'https' as const,
-            },
-          ]
-        : []),
     ],
   },
   reactStrictMode: true,

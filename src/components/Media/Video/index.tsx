@@ -23,9 +23,7 @@ export const Video: React.FC<MediaProps> = (props) => {
 
   if (resource && typeof resource === 'object') {
     const { filename, url } = resource
-    const videoSrc = url?.startsWith('http')
-      ? url
-      : `${process.env.NEXT_PUBLIC_SERVER_URL}/media/${filename}`
+    const videoSrc = url || `${process.env.NEXT_PUBLIC_SERVER_URL}/media/${filename}`
 
     return (
       <video
