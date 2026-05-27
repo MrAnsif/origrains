@@ -16,18 +16,19 @@ async function List() {
     },
   })
 
-  const categories = categoriesData.docs?.map((category) => {
-    return {
-      href: `/shop/${category.slug}`,
-      title: category.title,
-    }
-  })
-
+  const categories = categoriesData.docs
+    ?.filter((category) => category.slug !== 'featured-products')
+    ?.map((category) => {
+      return {
+        href: `/shop/${category.slug}`,
+        title: category.title,
+      }
+    })
   return (
     <React.Fragment>
       <nav>
-        <ul className="flex gap-3">
-          <Item title="All" href="/shop" />
+        <ul className="flex gap-3 items-center justify-center">
+          {/* <Item title="All" href="/shop" /> */}
           <Suspense fallback={null}>
             {categories.map((category) => {
               return <Item {...category} key={category.href} />

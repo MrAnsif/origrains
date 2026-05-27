@@ -2,6 +2,7 @@ import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
 import { BannerBlock } from '@/blocks/Banner/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { CarouselBlock } from '@/blocks/Carousel/Component'
+import { CategoryTabsBlockComponent } from '@/blocks/CategoryTabs/Component'
 import { ContentBlock } from '@/blocks/Content/Component'
 import { FormBlock } from '@/blocks/Form/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
@@ -15,6 +16,7 @@ const blockComponents = {
   archive: ArchiveBlock,
   banner: BannerBlock,
   carousel: CarouselBlock,
+  categoryTabs: CategoryTabsBlockComponent,
   content: ContentBlock,
   cta: CallToActionBlock,
   formBlock: FormBlock,
