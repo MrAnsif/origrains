@@ -22,7 +22,7 @@ export function HeaderClient({ header }: Props) {
   const pathname = usePathname()
 
   return (
-    <div className="relative z-20 border-b">
+    <div className="sticky top-2 z-50 border-b rounded-full bg-background/95">
       <nav className="flex items-center md:items-end justify-between container pt-2">
         <div className="block flex-none md:hidden">
           <Suspense fallback={null}>
