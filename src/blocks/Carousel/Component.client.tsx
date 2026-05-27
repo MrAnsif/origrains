@@ -38,7 +38,7 @@ export const CarouselClient: React.FC<{ products: Product[] }> = ({ products }) 
                   amount: product.priceInUSD!,
                   title: product.title,
                 }}
-                media={product.meta?.image as Media}
+                media={product.gallery?.[0]?.image as Media}
               />
             </Link>
           </CarouselItem>
