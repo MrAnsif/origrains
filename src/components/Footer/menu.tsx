@@ -15,8 +15,8 @@ export function FooterMenu({ menu }: Props) {
       <ul>
         {menu.map((item) => {
           return (
-            <li key={item.id}>
-              <CMSLink appearance="link" {...item.link} />
+            <li key={item.id} >
+              <CMSLink appearance="link" className='text-lg font-light' {...item.link} />
             </li>
           )
         })}
