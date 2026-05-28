@@ -11,6 +11,7 @@ import type { Header } from 'src/payload-types'
 import { LogoIcon } from '@/components/icons/logo'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/utilities/cn'
+import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 
 type Props = {
   header: Header
@@ -21,7 +22,7 @@ export function HeaderClient({ header }: Props) {
   const pathname = usePathname()
 
   return (
-    <div className="relative z-20 border-b">
+    <div className="sticky top-2 z-50 border-b rounded-full bg-background/95">
       <nav className="flex items-center md:items-end justify-between container pt-2">
         <div className="block flex-none md:hidden">
           <Suspense fallback={null}>
@@ -58,6 +59,9 @@ export function HeaderClient({ header }: Props) {
             <Suspense fallback={<OpenCartButton />}>
               <Cart />
             </Suspense>
+            <div className='navLink relative text-primary/50 hover:text-primary'>
+            <ThemeSelector />
+            </div>
           </div>
         </div>
       </nav>

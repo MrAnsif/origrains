@@ -7,7 +7,7 @@ import Link from 'next/link'
 import React from 'react'
 import { GridTileImage } from '@/components/Grid/tile'
 
-export const CarouselClient: React.FC<{ products: Product[] }> = async ({ products }) => {
+export const CarouselClient: React.FC<{ products: Product[] }> = ({ products }) => {
   if (!products?.length) return null
 
   // Purposefully duplicating products to make the carousel loop and not run out of products on wide screens.
@@ -38,7 +38,7 @@ export const CarouselClient: React.FC<{ products: Product[] }> = async ({ produc
                   amount: product.priceInUSD!,
                   title: product.title,
                 }}
-                media={product.meta?.image as Media}
+                media={product.gallery?.[0]?.image as Media}
               />
             </Link>
           </CarouselItem>

@@ -49,11 +49,11 @@ export default async function ShopPage({ searchParams }: Props) {
                             like: searchValue,
                           },
                         },
-                        {
-                          description: {
-                            like: searchValue,
-                          },
-                        },
+                        // {
+                        //   description: {
+                        //     like: searchValue,
+                        //   },
+                        // },
                       ],
                     },
                   ]

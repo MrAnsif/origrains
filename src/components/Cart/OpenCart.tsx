@@ -18,6 +18,7 @@ export function OpenCartButton({
       className="navLink relative items-end hover:cursor-pointer"
       {...rest}
     >
+      <ShoppingCart />
       <span>Cart</span>
 
       {quantity ? (
