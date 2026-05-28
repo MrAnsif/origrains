@@ -13,10 +13,11 @@ export function FooterMenu({ menu }: Props) {
   return (
     <nav>
       <ul>
+        <h3 className="mb-3 font-semibold text-foreground">Quick Links</h3>
         {menu.map((item) => {
           return (
             <li key={item.id} >
-              <CMSLink appearance="link" className='text-lg font-light' {...item.link} />
+              <CMSLink appearance="link" className='text-md font-light' {...item.link} />
             </li>
           )
         })}
