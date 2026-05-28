@@ -11,6 +11,7 @@ async function List() {
     collection: 'categories',
     sort: 'title',
     select: {
+      id: true,
       title: true,
       slug: true,
     },
@@ -20,7 +21,7 @@ async function List() {
     ?.filter((category) => category.slug !== 'featured-products')
     ?.map((category) => {
       return {
-        href: `/shop/${category.slug}`,
+        href: `/shop?category=${category.id}`,
         title: category.title,
       }
     })
