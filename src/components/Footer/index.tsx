@@ -19,7 +19,7 @@ export async function Footer() {
   const skeleton = 'w-full h-6 animate-pulse rounded bg-muted'
 
   const copyrightName = COMPANY_NAME || SITE_NAME || ''
-  const displaySiteName = SITE_NAME || 'UFA DISTRO'
+  const displaySiteName = SITE_NAME || ''
 
   return (
     <footer className="relative flex min-h-[43vh] md:min-h-[66vh] flex-col justify-end overflow-hidden bg-background text-sm text-muted-foreground">

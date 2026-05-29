@@ -34,7 +34,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ links, media, richText 
 
       {/* Foreground Text Container (Left Aligned) */}
       <div className="container relative z-10 px-4 md:px-8 xl:px-0 ">
-        <div className="max-w-2xl text-left">
+        <div className="max-w-2xl text-left font-mono">
           {richText && <RichText className="mb-6" data={richText} enableGutter={false} />}
           
           {Array.isArray(links) && links.length > 0 && (
