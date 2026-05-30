@@ -61,7 +61,7 @@ export const Label: React.FC<Props> = ({ amount, position = 'bottom', title }) =
             style={
               isOverflowing
                 ? {
-                    animation: `scrollTitle ${scrollDistance * 25}ms linear infinite alternate`,
+                    animation: `scrollTitle ${scrollDistance * 45}ms linear infinite `,
                     '--scroll-dist': `-${scrollDistance}px`,
                   } as React.CSSProperties
                 : {}
@@ -73,7 +73,7 @@ export const Label: React.FC<Props> = ({ amount, position = 'bottom', title }) =
           {isOverflowing && (
             <style>{`
               @keyframes scrollTitle {
-                0%, 15% { transform: translateX(0); }
+                0%, 20% { transform: translateX(0); }
                 85%, 100% { transform: translateX(var(--scroll-dist)); }
               }
             `}</style>
