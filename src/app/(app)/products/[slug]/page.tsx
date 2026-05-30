@@ -182,7 +182,7 @@ function RelatedProducts({ products }: { products: Product[] }) {
                   amount: product.priceInUSD!,
                   title: product.title,
                 }}
-                media={product.meta?.image as Media}
+                media={typeof product.gallery?.[0]?.image === 'object' ? (product.gallery[0].image as Media) : (product.meta?.image as Media)}
               />
             </Link>
           </li>

@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import type { Product } from '@/payload-types'
-
+import { Price } from '@/components/Price'
 import { createUrl } from '@/utilities/createUrl'
 import clsx from 'clsx'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
@@ -58,6 +58,7 @@ export function VariantSelector({ product }: { product: Product }) {
               const currentOptions = Array.from(optionSearchParams.values())
 
               let isAvailableForSale = true
+              let variantPrice: number | null = null
 
               // Find a matching variant
               if (variants) {
@@ -84,6 +85,10 @@ export function VariantSelector({ product }: { product: Product }) {
                   } else {
                     isAvailableForSale = false
                   }
+
+                  if (typeof matchingVariant.priceInUSD === 'number') {
+                    variantPrice = matchingVariant.priceInUSD
+                  }
                 }
               }
 
@@ -98,7 +103,7 @@ export function VariantSelector({ product }: { product: Product }) {
                 <Button
                   variant={'ghost'}
                   aria-disabled={!isAvailableForSale}
-                  className={clsx('px-2', {
+                  className={clsx('flex flex-col items-center px-4 h-auto py-1.5 rounded-lg', {
                     'bg-primary/5 text-primary': isActive,
                   })}
                   disabled={!isAvailableForSale}
@@ -110,7 +115,10 @@ export function VariantSelector({ product }: { product: Product }) {
                   }}
                   title={`${option.label} ${!isAvailableForSale ? ' (Out of Stock)' : ''}`}
                 >
-                  {option.label}
+                  <span>{option.label}</span>
+                  {variantPrice !== null && (
+                    <Price as="span" amount={variantPrice} className="text-xs font-normal opacity-70" />
+                  )}
                 </Button>
               )
             })}
