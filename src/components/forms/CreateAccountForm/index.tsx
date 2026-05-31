@@ -72,12 +72,7 @@ export const CreateAccountForm: React.FC = () => {
   )
 
   return (
-    <form className="max-w-lg py-4" onSubmit={handleSubmit(onSubmit)}>
-      <div className="prose dark:prose-invert mb-6">
-        <p>
-          {`Sign up to create a new account.`}
-        </p>
-      </div>
+    <form className="py-4" onSubmit={handleSubmit(onSubmit)}>
 
       <Message error={error} />
 
