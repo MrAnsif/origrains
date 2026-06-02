@@ -4,37 +4,27 @@ import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import React, { Fragment } from 'react'
 
 import { CheckoutPage } from '@/components/checkout/CheckoutPage'
+import { headers as getHeaders } from 'next/headers'
+import configPromise from '@payload-config'
+import { getPayload } from 'payload'
+import { redirect } from 'next/navigation'
 
-export default function Checkout() {
+export default async function Checkout() {
+  const headers = await getHeaders()
+  const payload = await getPayload({ config: configPromise })
+  const { user } = await payload.auth({ headers })
+
+  if (!user) {
+    redirect(`/login?redirect=${encodeURIComponent('/checkout')}`)
+  }
+
   return (
-    <div className="container min-h-[90vh] flex">
-      {!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY && (
-        <div>
-          <Fragment>
-            {'To enable checkout, you must '}
-            <a
-              href="https://dashboard.stripe.com/test/apikeys"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              obtain your Stripe API Keys
-            </a>
-            {' then set them as environment variables. See the '}
-            <a
-              href="https://github.com/payloadcms/payload/blob/3.x/templates/ecommerce/README.md#stripe"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              README
-            </a>
-            {' for more details.'}
-          </Fragment>
-        </div>
-      )}
+    <div className="container">
+      <div className="mx-auto my-20">
 
-      <h1 className="sr-only">Checkout</h1>
-
-      <CheckoutPage />
+        <h1 className="font-medium text-3xl">Checkout</h1>
+        <CheckoutPage />
+      </div>
     </div>
   )
 }
