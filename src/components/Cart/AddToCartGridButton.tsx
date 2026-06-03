@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { useRequireAuth } from '@/hooks/useRequireAuth'
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import Link from 'next/link'
 import React, { useCallback, useMemo } from 'react'
@@ -15,6 +16,7 @@ type Props = {
 
 export function AddToCartGridButton({ productId, productSlug, enableVariants, inventory }: Props) {
   const { addItem, cart, isLoading } = useCart()
+  const { isLoggedIn, redirectToLogin } = useRequireAuth()
 
   const isInCartAtMax = useMemo(() => {
     if (enableVariants) return false
@@ -37,11 +39,16 @@ export function AddToCartGridButton({ productId, productSlug, enableVariants, in
       e.preventDefault()
       e.stopPropagation()
 
+      if (!isLoggedIn) {
+        redirectToLogin(`/products/${productSlug}`)
+        return
+      }
+
       addItem({ product: productId }).then(() => {
         toast.success('Item added to cart.')
       })
     },
-    [addItem, productId],
+    [addItem, isLoggedIn, productId, productSlug, redirectToLogin],
   )
 
   // Variant products need the detail page for option selection

@@ -2,18 +2,22 @@
 
 import { Button } from '@/components/ui/button'
 import type { Product, Variant } from '@/payload-types'
+import { useRequireAuth } from '@/hooks/useRequireAuth'
 
 import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
 import clsx from 'clsx'
-import { useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import React, { useCallback, useMemo } from 'react'
 import { toast } from 'sonner'
+
 type Props = {
   product: Product
 }
 
 export function AddToCart({ product }: Props) {
   const { addItem, cart, isLoading } = useCart()
+  const { isLoggedIn, redirectToLogin } = useRequireAuth()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
 
   const variants = product.variants?.docs || []
@@ -41,6 +45,11 @@ export function AddToCart({ product }: Props) {
     (e: React.FormEvent<HTMLButtonElement>) => {
       e.preventDefault()
 
+      if (!isLoggedIn) {
+        redirectToLogin(pathname)
+        return
+      }
+
       addItem({
         product: product.id,
         variant: selectedVariant?.id ?? undefined,
@@ -48,7 +57,7 @@ export function AddToCart({ product }: Props) {
         toast.success('Item added to cart.')
       })
     },
-    [addItem, product, selectedVariant],
+    [addItem, isLoggedIn, pathname, product, redirectToLogin, selectedVariant],
   )
 
   const disabled = useMemo<boolean>(() => {

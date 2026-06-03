@@ -4,7 +4,6 @@ import { Media } from '@/components/Media'
 import { Message } from '@/components/Message'
 import { Price } from '@/components/Price'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/providers/Auth'
 import { useTheme } from '@/providers/Theme'
@@ -18,11 +17,9 @@ import { cssVariables } from '@/cssVariables'
 import { CheckoutForm } from '@/components/forms/CheckoutForm'
 import { useAddresses, useCart, usePayments } from '@payloadcms/plugin-ecommerce/client/react'
 import { CheckoutAddresses } from '@/components/checkout/CheckoutAddresses'
-import { CreateAddressModal } from '@/components/addresses/CreateAddressModal'
 import { Address, Product, Variant, VariantOption } from '@/payload-types'
 import { Checkbox } from '@/components/ui/checkbox'
 import { AddressItem } from '@/components/addresses/AddressItem'
-import { FormItem } from '@/components/forms/FormItem'
 import { toast } from 'sonner'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 
@@ -58,11 +55,6 @@ export const CheckoutPage: React.FC = () => {
   const { cart } = useCart()
   const [error, setError] = useState<null | string>(null)
   const { theme } = useTheme()
-  /**
-   * State to manage the email input for guest checkout.
-   */
-  const [email, setEmail] = useState('')
-  const [emailEditable, setEmailEditable] = useState(true)
   const [paymentData, setPaymentData] = useState<null | Record<string, unknown>>(null)
   const { initiatePayment } = usePayments()
   const { addresses } = useAddresses()
@@ -74,7 +66,7 @@ export const CheckoutPage: React.FC = () => {
   const cartIsEmpty = !cart || !cart.items || !cart.items.length
 
   const canGoToPayment = Boolean(
-    (email || user) && billingAddress && (billingAddressSameAsShipping || shippingAddress),
+    user && billingAddress && (billingAddressSameAsShipping || shippingAddress),
   )
 
   // On initial load wait for addresses to be loaded and check to see if we can prefill a default one
@@ -94,8 +86,6 @@ export const CheckoutPage: React.FC = () => {
       setShippingAddress(undefined)
       setBillingAddress(undefined)
       setBillingAddressSameAsShipping(true)
-      setEmail('')
-      setEmailEditable(true)
     }
   }, [])
 
@@ -104,7 +94,6 @@ export const CheckoutPage: React.FC = () => {
       try {
         const paymentData = (await initiatePayment(paymentID, {
           additionalData: {
-            ...(email ? { customerEmail: email } : {}),
             billingAddress,
             shippingAddress: billingAddressSameAsShipping ? billingAddress : shippingAddress,
           },
@@ -125,7 +114,7 @@ export const CheckoutPage: React.FC = () => {
         toast.error(errorMessage)
       }
     },
-    [billingAddress, billingAddressSameAsShipping, shippingAddress],
+    [billingAddress, billingAddressSameAsShipping, initiatePayment, shippingAddress],
   )
 
   if (!stripe) return null
@@ -153,62 +142,17 @@ export const CheckoutPage: React.FC = () => {
   return (
     <div className="flex flex-col items-stretch justify-stretch my-8 md:flex-row grow gap-10 md:gap-6 lg:gap-8">
       <div className="basis-full lg:basis-2/3 flex flex-col gap-8 justify-stretch">
-        <h2 className="font-medium text-3xl">Contact</h2>
-        {!user && (
-          <div className=" bg-accent dark:bg-black rounded-lg p-4 w-full flex items-center">
-            <div className="prose dark:prose-invert">
-              <Button asChild className="no-underline text-inherit" variant="outline">
-                <Link href="/login">Log in</Link>
-              </Button>
-              <p className="mt-0">
-                <span className="mx-2">or</span>
-                <Link href="/create-account">create an account</Link>
-              </p>
-            </div>
+        <div className="bg-accent dark:bg-accent rounded-lg p-4">
+          <div>
+            <p>{user?.email}</p>{' '}
+            <p>
+              Not you?{' '}
+              <Link className="underline" href="/logout">
+                Log out
+              </Link>
+            </p>
           </div>
-        )}
-        {user ? (
-          <div className="bg-accent dark:bg-card rounded-lg p-4 ">
-            <div>
-              <p>{user.email}</p>{' '}
-              <p>
-                Not you?{' '}
-                <Link className="underline" href="/logout">
-                  Log out
-                </Link>
-              </p>
-            </div>
-          </div>
-        ) : (
-          <div className="bg-accent dark:bg-black rounded-lg p-4 ">
-            <div>
-              <p className="mb-4">Enter your email to checkout as a guest.</p>
-
-              <FormItem className="mb-6">
-                <Label htmlFor="email">Email Address</Label>
-                <Input
-                  disabled={!emailEditable}
-                  id="email"
-                  name="email"
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  type="email"
-                />
-              </FormItem>
-
-              <Button
-                disabled={!email || !emailEditable}
-                onClick={(e) => {
-                  e.preventDefault()
-                  setEmailEditable(false)
-                }}
-                variant="default"
-              >
-                Continue as guest
-              </Button>
-            </div>
-          </div>
-        )}
+        </div>
 
         <h2 className="font-medium text-3xl">Address</h2>
 
@@ -230,23 +174,15 @@ export const CheckoutPage: React.FC = () => {
               address={billingAddress}
             />
           </div>
-        ) : user ? (
-          <CheckoutAddresses heading="Billing address" setAddress={setBillingAddress} />
         ) : (
-          <CreateAddressModal
-            disabled={!email || Boolean(emailEditable)}
-            callback={(address) => {
-              setBillingAddress(address)
-            }}
-            skipSubmission={true}
-          />
+          <CheckoutAddresses heading="Billing address" setAddress={setBillingAddress} />
         )}
 
         <div className="flex gap-4 items-center">
           <Checkbox
             id="shippingTheSameAsBilling"
             checked={billingAddressSameAsShipping}
-            disabled={Boolean(paymentData || (!user && (!email || Boolean(emailEditable))))}
+            disabled={Boolean(paymentData)}
             onCheckedChange={(state) => {
               setBillingAddressSameAsShipping(state as boolean)
             }}
@@ -274,19 +210,11 @@ export const CheckoutPage: React.FC = () => {
                   address={shippingAddress}
                 />
               </div>
-            ) : user ? (
+            ) : (
               <CheckoutAddresses
                 heading="Shipping address"
                 description="Please select a shipping address."
                 setAddress={setShippingAddress}
-              />
-            ) : (
-              <CreateAddressModal
-                callback={(address) => {
-                  setShippingAddress(address)
-                }}
-                disabled={!email || Boolean(emailEditable)}
-                skipSubmission={true}
               />
             )}
           </>
@@ -356,7 +284,6 @@ export const CheckoutPage: React.FC = () => {
               >
                 <div className="flex flex-col gap-8">
                   <CheckoutForm
-                    customerEmail={email}
                     billingAddress={billingAddress}
                     setProcessingPayment={setProcessingPayment}
                   />
