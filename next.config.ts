@@ -16,6 +16,7 @@ const nextConfig: NextConfig = {
     loadPaths: ['./node_modules/@payloadcms/ui/dist/scss/'],
   },
   images: {
+    formats: ['image/avif', 'image/webp'],
     localPatterns: [
       {
         pathname: '/api/media/file/**',

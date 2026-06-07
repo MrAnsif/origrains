@@ -14,6 +14,7 @@ import {
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
+import sharp from 'sharp'
 
 import { Categories } from '@/collections/Categories'
 import { Media } from '@/collections/Media'
@@ -98,8 +99,5 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  // Sharp is now an optional dependency -
-  // if you want to resize images, crop, set focal point, etc.
-  // make sure to install it and pass it to the config.
-  // sharp,
+  sharp,
 })
