@@ -14,6 +14,7 @@ import {
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
+import sharp from 'sharp'
 
 import { Categories } from '@/collections/Categories'
 import { Media } from '@/collections/Media'
@@ -28,6 +29,15 @@ const dirname = path.dirname(filename)
 
 export default buildConfig({
   admin: {
+    meta: {
+      icons: [
+        {
+          rel: 'icon',
+          type: 'image/x-icon',
+          url: '/favicon.ico',
+        },
+      ],
+    },
     components: {
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
       // Feel free to delete this at any time. Simply remove the line below and the import `BeforeLogin` statement on line 15.
@@ -98,8 +108,5 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  // Sharp is now an optional dependency -
-  // if you want to resize images, crop, set focal point, etc.
-  // make sure to install it and pass it to the config.
-  // sharp,
+  sharp,
 })

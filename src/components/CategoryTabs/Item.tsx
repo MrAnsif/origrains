@@ -19,7 +19,7 @@ export function Item({ href, title }: Props) {
     <li className="mt-2 flex text-lg text-black dark:text-white bg-card rounded-full">
       <DynamicTag
         className={clsx(
-          'w-full font-mono text-popover px-2 py-1 rounded-md hover:bg-white/10',
+          'w-full font-mono uppercase text-base px-2 py-1 rounded-full hover:bg-white/10',
           {
             'bg-white/5 text-primary': active,
           },

@@ -7,6 +7,7 @@ import {
 } from '@payloadcms/richtext-lexical'
 
 import { adminOnly } from '@/access/adminOnly'
+import { optimizeImage } from '@/hooks/media/optimizeImage'
 
 export const Media: CollectionConfig = {
   admin: {
@@ -35,5 +36,13 @@ export const Media: CollectionConfig = {
       }),
     },
   ],
-  upload: true,
+  hooks: {
+    beforeOperation: [optimizeImage],
+  },
+  upload: {
+    // Reject non-image uploads at the collection level
+    // mimeTypes: ['image/jpeg', 'image/png', 'image/tiff', 'image/webp', 'image/gif'], 
+    // Hard cap before any processing (10 MB)
+    // maxFileSize: 10_000_000,
+  },
 }
